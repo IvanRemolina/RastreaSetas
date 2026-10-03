@@ -1,6 +1,7 @@
 import { createRainLayer } from "./heatLayer.js";
+import { createHabitatLayer } from "./habitatLayer.js";
 
-export function initializeMap({ onMapClick, onZoom }) {
+export function initializeMap({ onMapClick, onZoom, onHabitatStatus }) {
   const map = L.map("map", { zoomControl: false }).setView([40.4167, -3.7037], 6);
   const topographic = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
@@ -13,7 +14,12 @@ export function initializeMap({ onMapClick, onZoom }) {
 
   topographic.addTo(map);
   L.control.zoom({ position: "topright" }).addTo(map);
-  L.control.layers({ "Topográfica · OpenStreetMap": topographic, "Satélite · Esri": satellite }, null, { position: "topright" }).addTo(map);
+  const habitat = createHabitatLayer(map, onHabitatStatus);
+  L.control.layers(
+    { "Topográfica · OpenStreetMap": topographic, "Satélite · Esri": satellite },
+    { "Coníferas · OSM (orientativo)": habitat },
+    { position: "topright" }
+  ).addTo(map);
 
   const rain = createRainLayer();
   rain.layer.addTo(map);

@@ -29,6 +29,9 @@
 .species-facts dt { color: #7c8278; font-size: 10px; }
 .species-facts dd { margin: 0; color: #444d43; font-size: 10px; line-height: 1.45; }
 .species-note { margin: 11px 0 0; color: #85897f; font-size: 9px; line-height: 1.5; }
+.legal-guidance { margin-top: 15px; padding: 12px; background: #f5f1e8; border-left: 3px solid var(--earth-700); }
+.legal-guidance h2 { margin: 0; color: #5e4838; font: 700 12px "Manrope", sans-serif; }
+.legal-guidance p { margin: 6px 0 0; color: #75685c; font-size: 10px; line-height: 1.5; }
 .daily-section { margin-top: 20px; }
 .section-heading { display: flex; align-items: baseline; justify-content: space-between; }
 .section-heading h2 { margin: 0; color: var(--forest-950); font: 700 14px "Manrope", sans-serif; }

@@ -21,6 +21,7 @@ const elements = {
   daily: document.querySelector("#daily-list"),
   message: document.querySelector("#detail-message"),
   stationStatus: document.querySelector("#station-status"),
+  habitatStatus: document.querySelector("#habitat-status"),
   opacity: document.querySelector("#opacity-slider"),
   opacityValue: document.querySelector("#opacity-value"),
   populationForm: document.querySelector("#population-search"),
@@ -48,6 +49,10 @@ let populationRequest = 0;
 let mapZoom = 6;
 const map = initializeMap({
   onMapClick: (latitude, longitude) => selectLocation(latitude, longitude),
+  onHabitatStatus: (message) => {
+    elements.habitatStatus.textContent = message;
+    elements.habitatStatus.hidden = !message;
+  },
   onZoom: (zoom) => {
     mapZoom = zoom;
     updateStationStatus();

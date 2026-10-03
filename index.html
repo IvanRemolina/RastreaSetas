@@ -44,6 +44,7 @@
           <div class="toolbar-caption"><span class="rain-key"></span> Precipitación acumulada</div>
         </div>
         <div id="map" role="application" aria-label="Mapa interactivo. Selecciona un punto para consultar la lluvia"></div>
+        <div id="habitat-status" class="habitat-status" role="status" aria-live="polite" hidden></div>
         <div class="map-footer">
           <span><span class="data-dot"></span><span id="station-status">Preparando estaciones...</span></span>
           <label class="opacity-control" for="opacity-slider"><span>Opacidad</span><input id="opacity-slider" type="range" min="20" max="100" value="78" aria-label="Opacidad de la capa de lluvia"><output id="opacity-value">78%</output></label>
@@ -101,6 +102,10 @@
             <div><dt>Época aproximada</dt><dd id="species-season"></dd></div>
           </dl>
           <p id="species-note" class="species-note"></p>
+        </section>
+        <section class="legal-guidance" aria-labelledby="legal-title">
+          <h2 id="legal-title">Permisos de recolección</h2>
+          <p>La capa de coníferas es colaborativa y orientativa; no indica propiedad, acceso ni permiso. Consulta la normativa de la comunidad autónoma y del municipio antes de recolectar.</p>
         </section>
         <section class="daily-section" aria-labelledby="daily-title">
           <div class="section-heading"><h2 id="daily-title">Desglose diario</h2><span>mm / día</span></div>

@@ -33,6 +33,9 @@ Todos los recursos propios usan rutas relativas para funcionar tanto en la raíz
 - **Open-Meteo Historical Weather API:** `https://archive-api.open-meteo.com/v1/archive`, variables diarias `precipitation_sum` y `temperature_2m_mean`, zona horaria `Europe/Madrid`. No requiere clave.
 - **Open-Meteo Forecast API:** `https://api.open-meteo.com/v1/forecast`, 42 días previos y 16 días de previsión: precipitación, temperatura media/mínima, humedad relativa y viento máximo diario. No requiere clave.
 - **Open-Meteo Geocoding API:** `https://geocoding-api.open-meteo.com/v1/search`, para localizar poblaciones y centrar el mapa. No requiere clave.
+- **OpenStreetMap Overpass API:** consulta vías forestales etiquetadas como coníferas dentro de la vista del mapa, solo desde zoom 10. Es una capa de hábitat potencial colaborativa, no una delimitación oficial de pinares.
+
+La capa forestal depende de etiquetas de OpenStreetMap y de servidores públicos Overpass, sujetos a cobertura desigual, límites de uso y disponibilidad. No muestra permisos. No existe en la aplicación una cartografía estatal verificada de acotados o zonas legales; los requisitos dependen de la comunidad autónoma, municipio y titular del terreno. Un monte público tampoco implica permiso automático. Comprueba la normativa y autorización local antes de recolectar.
 
 La estimación de fructificación busca episodios de lluvia dentro de la ventana de incubación definida para cada especie y combina volumen y continuidad de lluvia, tiempo de maduración y meteorología prevista (temperatura, heladas, humedad, viento y descenso de mínimas nocturnas). Los valores de `js/utils/speciesProfiles.js` son aproximaciones editables basadas en los rangos facilitados para el proyecto, no umbrales científicos validados. El porcentaje es una puntuación heurística, no una probabilidad estadística calibrada con salidas micológicas. No se conocen el suelo, la altitud exacta, la orientación, los árboles o plantas hospedadores ni la presión de recolección. Contrasta siempre con conocimiento local y normativa vigente; nunca consumas una seta por una predicción o una identificación automática.
 
@@ -55,7 +58,8 @@ La estimación de fructificación busca episodios de lluvia dentro de la ventana
     │   └── openMeteo.js
     ├── map/
     │   ├── mapManager.js
-    │   └── heatLayer.js
+    │   ├── heatLayer.js
+    │   └── habitatLayer.js
     └── utils/
         ├── mycoIndex.js
         └── speciesProfiles.js
