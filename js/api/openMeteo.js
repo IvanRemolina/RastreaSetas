@@ -1,5 +1,6 @@
 const API_URL = "https://archive-api.open-meteo.com/v1/archive";
 const DAY_MS = 24 * 60 * 60 * 1000;
+const SUPPORTED_PERIODS = [3, 7, 14, 21, 28];
 
 function formatDate(date) {
   return date.toISOString().slice(0, 10);
@@ -22,7 +23,8 @@ function normalizeResponse(payload, coordinates) {
 
     const daily = response.daily.time.map((date, dayIndex) => ({
       date,
-      precipitation: response.daily.precipitation_sum[dayIndex]
+      precipitation: response.daily.precipitation_sum[dayIndex],
+      temperature: response.daily.temperature_2m_mean?.[dayIndex] ?? null
     }));
 
     return {
@@ -35,7 +37,7 @@ function normalizeResponse(payload, coordinates) {
 
 export async function getRainfallForLocations(coordinates, days = 14) {
   if (!Array.isArray(coordinates) || coordinates.length === 0) return [];
-  if (![3, 7, 14].includes(days)) throw new RangeError("El periodo debe ser de 3, 7 o 14 días.");
+  if (!SUPPORTED_PERIODS.includes(days)) throw new RangeError("El periodo debe ser de 3, 7, 14, 21 o 28 días.");
 
   const { startDate, endDate } = getDateRange(days);
   const query = new URLSearchParams({
@@ -43,7 +45,7 @@ export async function getRainfallForLocations(coordinates, days = 14) {
     longitude: coordinates.map(({ longitude }) => longitude).join(","),
     start_date: startDate,
     end_date: endDate,
-    daily: "precipitation_sum",
+    daily: "precipitation_sum,temperature_2m_mean",
     timezone: "Europe/Madrid"
   });
 

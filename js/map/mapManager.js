@@ -25,8 +25,12 @@ export function initializeMap({ onMapClick, onZoom }) {
     fillOpacity: 1
   });
 
+  function selectPoint(latitude, longitude) {
+    selectedPoint.setLatLng([latitude, longitude]).addTo(map);
+  }
+
   map.on("click", (event) => {
-    selectedPoint.setLatLng(event.latlng).addTo(map);
+    selectPoint(event.latlng.lat, event.latlng.lng);
     onMapClick(event.latlng.lat, event.latlng.lng);
   });
   map.on("zoomend", () => onZoom(map.getZoom()));
@@ -36,6 +40,10 @@ export function initializeMap({ onMapClick, onZoom }) {
     getStations: () => rain.getStations(),
     setStationData: (locations) => rain.setLocations(locations),
     setPeriod: (days) => rain.setPeriod(days),
-    setOpacity: (opacity) => rain.setOpacity(opacity)
+    setOpacity: (opacity) => rain.setOpacity(opacity),
+    focusLocation(latitude, longitude) {
+      map.setView([latitude, longitude], Math.max(map.getZoom(), 10));
+      selectPoint(latitude, longitude);
+    }
   };
 }

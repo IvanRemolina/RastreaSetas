@@ -29,9 +29,18 @@
         <div class="map-toolbar">
           <div class="period-control" role="group" aria-label="Periodo de lluvia">
             <button class="period-button" type="button" data-days="3" aria-pressed="false">3 días</button>
-            <button class="period-button is-active" type="button" data-days="7" aria-pressed="true">7 días</button>
+            <button class="period-button" type="button" data-days="7" aria-pressed="false">7 días</button>
             <button class="period-button" type="button" data-days="14" aria-pressed="false">14 días</button>
+            <button class="period-button is-active" type="button" data-days="21" aria-pressed="true">21 días</button>
+            <button class="period-button" type="button" data-days="28" aria-pressed="false">28 días</button>
           </div>
+          <form id="population-search" class="population-search" role="search" autocomplete="off">
+            <label class="visually-hidden" for="population-input">Buscar población en España</label>
+            <input id="population-input" type="search" placeholder="Buscar población..." role="combobox" aria-autocomplete="list" aria-controls="population-results" aria-expanded="false">
+            <button type="submit" aria-label="Buscar población">Buscar</button>
+            <ul id="population-results" class="population-results" role="listbox" aria-label="Poblaciones" hidden></ul>
+            <span id="population-status" class="population-status" role="status" aria-live="polite"></span>
+          </form>
           <div class="toolbar-caption"><span class="rain-key"></span> Precipitación acumulada</div>
         </div>
         <div id="map" role="application" aria-label="Mapa interactivo. Selecciona un punto para consultar la lluvia"></div>
@@ -54,6 +63,21 @@
           <div class="aptitude-top"><div><span class="eyebrow">APTITUD MICOLÓGICA</span><h2 id="myco-level">Sin datos</h2></div><span id="myco-score" class="score">--</span></div>
           <div class="score-track" aria-hidden="true"><span id="score-fill"></span></div>
           <p id="myco-description" class="aptitude-note">Elige un punto del mapa para ver una estimación.</p>
+        </section>
+        <section class="species-panel" aria-labelledby="species-title">
+          <div class="species-select-row">
+            <label class="eyebrow" for="species-select">CONDICIONES POR ESPECIE</label>
+            <select id="species-select" aria-label="Seleccionar especie de referencia"></select>
+          </div>
+          <h2 id="species-title">Setas generales</h2>
+          <p id="species-scientific" class="species-scientific"></p>
+          <dl class="species-facts">
+            <div><dt>Lluvia orientativa</dt><dd id="species-rain"></dd></div>
+            <div><dt>Temperatura de fructificación</dt><dd id="species-temperature"></dd></div>
+            <div><dt>Hábitat y suelo</dt><dd id="species-habitat"></dd></div>
+            <div><dt>Época aproximada</dt><dd id="species-season"></dd></div>
+          </dl>
+          <p id="species-note" class="species-note"></p>
         </section>
         <section class="daily-section" aria-labelledby="daily-title">
           <div class="section-heading"><h2 id="daily-title">Desglose diario</h2><span>mm / día</span></div>
