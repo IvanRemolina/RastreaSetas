@@ -59,10 +59,32 @@
           <div><span class="eyebrow">LLUVIA ACUMULADA</span><p class="total-value"><span id="total-rain">--</span><span class="unit">mm</span></p></div>
           <span class="period-badge" id="period-label">21 DÍAS</span>
         </div>
-        <section class="aptitude" aria-live="polite">
-          <div class="aptitude-top"><div><span class="eyebrow">APTITUD MICOLÓGICA</span><h2 id="myco-level">Sin datos</h2></div><span id="myco-score" class="score">--</span></div>
-          <div class="score-track" aria-hidden="true"><span id="score-fill"></span></div>
-          <p id="myco-description" class="aptitude-note">Elige un punto del mapa para ver una estimación.</p>
+        <section class="forecast-panel" aria-labelledby="forecast-title" aria-live="polite">
+          <div class="forecast-heading">
+            <div><span class="eyebrow">ESTIMACIÓN ORIENTATIVA</span><h2 id="forecast-title">Posibilidad de fructificación</h2></div>
+            <label for="forecast-horizon">A futuro
+              <select id="forecast-horizon" aria-label="Horizonte de la estimación">
+                <option value="3">3 días</option>
+                <option value="7" selected>7 días</option>
+                <option value="14">14 días</option>
+              </select>
+            </label>
+          </div>
+          <div class="forecast-cards">
+            <article class="forecast-card">
+              <span class="forecast-date">Hoy</span>
+              <strong id="forecast-today">--%</strong>
+              <span id="forecast-today-level" class="forecast-level">Sin datos</span>
+              <small id="forecast-today-reason">Consulta una ubicación para estimar.</small>
+            </article>
+            <article class="forecast-card forecast-card-future">
+              <span id="forecast-future-date" class="forecast-date">En 7 días</span>
+              <strong id="forecast-future">--%</strong>
+              <span id="forecast-future-level" class="forecast-level">Sin datos</span>
+              <small id="forecast-future-reason">Se actualiza al cambiar el horizonte.</small>
+            </article>
+          </div>
+          <p class="forecast-disclaimer">Porcentaje heurístico, no probabilidad estadística. Usa lluvia, incubación y meteorología; no conoce el suelo ni confirma el hábitat.</p>
         </section>
         <section class="species-panel" aria-labelledby="species-title">
           <div class="species-select-row">
@@ -73,6 +95,7 @@
           <p id="species-scientific" class="species-scientific"></p>
           <dl class="species-facts">
             <div><dt>Lluvia orientativa</dt><dd id="species-rain"></dd></div>
+            <div><dt>Incubación estimada</dt><dd id="species-incubation"></dd></div>
             <div><dt>Temperatura de fructificación</dt><dd id="species-temperature"></dd></div>
             <div><dt>Hábitat y suelo</dt><dd id="species-habitat"></dd></div>
             <div><dt>Época aproximada</dt><dd id="species-season"></dd></div>
@@ -84,7 +107,7 @@
           <div id="daily-list" class="daily-list"><p class="empty-daily">Los datos diarios aparecerán aquí.</p></div>
         </section>
         <div id="detail-message" class="detail-message" role="status" aria-live="polite"></div>
-        <p class="disclaimer"><span aria-hidden="true">ⓘ</span> Estimación orientativa basada solo en lluvia. La presencia de setas depende también del hábitat, suelo, temperatura y otros factores.</p>
+        <p class="disclaimer"><span aria-hidden="true">ⓘ</span> Orientación para planificar salidas; nunca confirma la presencia de setas ni sustituye la identificación experta.</p>
         <footer class="sidebar-footer">DATOS METEOROLÓGICOS · OPEN-METEO</footer>
       </aside>
     </main>

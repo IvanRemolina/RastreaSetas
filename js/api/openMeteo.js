@@ -1,4 +1,5 @@
 const API_URL = "https://archive-api.open-meteo.com/v1/archive";
+const FORECAST_API_URL = "https://api.open-meteo.com/v1/forecast";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const SUPPORTED_PERIODS = [3, 7, 14, 21, 28];
 
@@ -24,7 +25,10 @@ function normalizeResponse(payload, coordinates) {
     const daily = response.daily.time.map((date, dayIndex) => ({
       date,
       precipitation: response.daily.precipitation_sum[dayIndex],
-      temperature: response.daily.temperature_2m_mean?.[dayIndex] ?? null
+      temperature: response.daily.temperature_2m_mean?.[dayIndex] ?? null,
+      minimumTemperature: response.daily.temperature_2m_min?.[dayIndex] ?? null,
+      humidity: response.daily.relative_humidity_2m_mean?.[dayIndex] ?? null,
+      wind: response.daily.wind_speed_10m_max?.[dayIndex] ?? null
     }));
 
     return {
@@ -54,7 +58,17 @@ export async function getRainfallForLocations(coordinates, days = 14) {
   return normalizeResponse(await response.json(), coordinates);
 }
 
-export async function getRainfall(latitude, longitude, days = 14) {
-  const [result] = await getRainfallForLocations([{ latitude, longitude }], days);
+export async function getRainfall(latitude, longitude) {
+  const params = new URLSearchParams({
+    latitude: String(latitude),
+    longitude: String(longitude),
+    past_days: "42",
+    forecast_days: "16",
+    daily: "precipitation_sum,temperature_2m_mean,temperature_2m_min,relative_humidity_2m_mean,wind_speed_10m_max",
+    timezone: "Europe/Madrid"
+  });
+  const response = await fetch(`${FORECAST_API_URL}?${params}`);
+  if (!response.ok) throw new Error(`Open-Meteo respondió con el estado ${response.status}.`);
+  const [result] = normalizeResponse(await response.json(), [{ latitude, longitude }]);
   return result;
 }

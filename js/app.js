@@ -1,7 +1,7 @@
 import { getRainfall, getRainfallForLocations } from "./api/openMeteo.js";
 import { searchPopulations } from "./api/geocoding.js";
 import { initializeMap } from "./map/mapManager.js";
-import { calculateMycoIndex } from "./utils/mycoIndex.js";
+import { estimateFruitingProbability } from "./utils/mycoIndex.js";
 import { SPECIES_PROFILES } from "./utils/speciesProfiles.js";
 
 const elements = {
@@ -10,10 +10,14 @@ const elements = {
   location: document.querySelector("#detail-location"),
   total: document.querySelector("#total-rain"),
   period: document.querySelector("#period-label"),
-  mycoLevel: document.querySelector("#myco-level"),
-  mycoScore: document.querySelector("#myco-score"),
-  scoreFill: document.querySelector("#score-fill"),
-  mycoDescription: document.querySelector("#myco-description"),
+  forecastHorizon: document.querySelector("#forecast-horizon"),
+  forecastToday: document.querySelector("#forecast-today"),
+  forecastTodayLevel: document.querySelector("#forecast-today-level"),
+  forecastTodayReason: document.querySelector("#forecast-today-reason"),
+  forecastFuture: document.querySelector("#forecast-future"),
+  forecastFutureLevel: document.querySelector("#forecast-future-level"),
+  forecastFutureReason: document.querySelector("#forecast-future-reason"),
+  forecastFutureDate: document.querySelector("#forecast-future-date"),
   daily: document.querySelector("#daily-list"),
   message: document.querySelector("#detail-message"),
   stationStatus: document.querySelector("#station-status"),
@@ -27,6 +31,7 @@ const elements = {
   speciesTitle: document.querySelector("#species-title"),
   speciesScientific: document.querySelector("#species-scientific"),
   speciesRain: document.querySelector("#species-rain"),
+  speciesIncubation: document.querySelector("#species-incubation"),
   speciesTemperature: document.querySelector("#species-temperature"),
   speciesHabitat: document.querySelector("#species-habitat"),
   speciesSeason: document.querySelector("#species-season"),
@@ -37,6 +42,7 @@ let selectedDays = 21;
 let selectedLocation = null;
 let selectedRequest = 0;
 let selectedProfile = SPECIES_PROFILES[0];
+let forecastHorizon = 7;
 let populationTimer = null;
 let populationRequest = 0;
 let mapZoom = 6;
@@ -58,11 +64,34 @@ function formatCoordinate(latitude, longitude) {
   return `${Math.abs(latitude).toFixed(4)}° ${latDirection}, ${Math.abs(longitude).toFixed(4)}° ${lonDirection}`;
 }
 
+function getSpainToday() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Madrid",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function addDays(date, days) {
+  const result = new Date(`${date}T12:00:00Z`);
+  result.setUTCDate(result.getUTCDate() + days);
+  return result.toISOString().slice(0, 10);
+}
+
+function formatForecastDate(date) {
+  return new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "short" })
+    .format(new Date(`${date}T12:00:00`));
+}
+
 function renderSpeciesProfile(profile) {
   elements.speciesTitle.textContent = profile.name;
   elements.speciesScientific.textContent = profile.scientificName;
-  elements.speciesRain.textContent = `≈${profile.rainfall.minimum}–${profile.rainfall.maximum} mm / ${profile.rainfall.referenceDays} días (óptimo ~${profile.rainfall.ideal} mm)`;
-  elements.speciesTemperature.textContent = `${profile.temperature.minimum}–${profile.temperature.maximum} °C`;
+  elements.speciesRain.textContent = `≈${profile.rainfall.minimum}–${profile.rainfall.maximum} mm / ${profile.rainfall.windowDays} días (óptimo ~${profile.rainfall.ideal} mm)`;
+  elements.speciesIncubation.textContent = `${profile.incubation.minimum}–${profile.incubation.maximum} días tras lluvia desencadenante`;
+  elements.speciesTemperature.textContent = `Media ${profile.temperature.mean.minimum}–${profile.temperature.mean.maximum} °C · mín. nocturna ${profile.temperature.night.minimum}–${profile.temperature.night.maximum} °C`;
   elements.speciesHabitat.textContent = profile.habitat;
   elements.speciesSeason.textContent = profile.season;
   elements.speciesNote.textContent = profile.note;
@@ -77,7 +106,30 @@ SPECIES_PROFILES.forEach((profile) => {
 renderSpeciesProfile(selectedProfile);
 
 function getRecentDays(daily) {
-  return daily.slice(-selectedDays);
+  return daily.filter(({ date }) => date <= getSpainToday()).slice(-selectedDays);
+}
+
+function describeEstimate(estimate) {
+  if (!estimate) return "Previsión no disponible para esta fecha.";
+  if (estimate.triggerDate) {
+    return `Lluvia desencadenante: ${estimate.rainfall} mm · incubación: ${estimate.incubationDays} días.`;
+  }
+  return estimate.reason;
+}
+
+function renderProbability(prefix, estimate) {
+  const probability = estimate ? `${estimate.probability}%` : "--%";
+  elements[`forecast${prefix}`].textContent = probability;
+  elements[`forecast${prefix}Level`].textContent = estimate?.label ?? "Sin datos";
+  elements[`forecast${prefix}Reason`].textContent = describeEstimate(estimate);
+}
+
+function renderForecast(daily) {
+  const today = getSpainToday();
+  const futureDate = addDays(today, forecastHorizon);
+  elements.forecastFutureDate.textContent = `En ${forecastHorizon} días · ${formatForecastDate(futureDate)}`;
+  renderProbability("Today", estimateFruitingProbability(daily, today, selectedProfile));
+  renderProbability("Future", estimateFruitingProbability(daily, futureDate, selectedProfile));
 }
 
 function renderDaily(daily) {
@@ -114,17 +166,13 @@ function renderLocation(data) {
     .map(({ precipitation }) => precipitation)
     .filter(Number.isFinite);
   const total = validValues.reduce((sum, value) => sum + value, 0);
-  const index = calculateMycoIndex(data.daily, selectedDays, selectedProfile);
 
   elements.total.textContent = validValues.length ? total.toFixed(1) : "--";
-  elements.mycoLevel.textContent = index?.label ?? "Sin datos";
-  elements.mycoScore.textContent = index ? `${index.score}` : "--";
-  elements.scoreFill.style.width = `${index?.score ?? 0}%`;
-  elements.mycoDescription.textContent = index?.note ?? "No hay precipitación diaria disponible para este periodo.";
   renderDaily(data.daily);
+  renderForecast(data.daily);
 
   if (validValues.length < selectedDays) {
-    elements.message.textContent = `Datos parciales: ${validValues.length} de ${selectedDays} días disponibles. El histórico reciente puede tener demora.`;
+    elements.message.textContent = `Datos parciales: ${validValues.length} de ${selectedDays} días disponibles.`;
   } else {
     elements.message.textContent = "";
   }
@@ -136,24 +184,22 @@ async function selectLocation(latitude, longitude, name = null) {
   elements.detailTitle.textContent = selectedLocation.name ?? "Ubicación consultada";
   elements.location.textContent = formatCoordinate(latitude, longitude);
   elements.total.textContent = "…";
-  elements.mycoLevel.textContent = "Consultando";
-  elements.mycoScore.textContent = "--";
-  elements.scoreFill.style.width = "0%";
-  elements.mycoDescription.textContent = "Consultando precipitación y temperatura medias del histórico.";
+  renderProbability("Today", null);
+  renderProbability("Future", null);
   elements.daily.replaceChildren();
   elements.message.textContent = "Conectando con Open-Meteo…";
   elements.message.classList.add("is-loading");
 
   try {
-    const data = await getRainfall(latitude, longitude, 28);
+    const data = await getRainfall(latitude, longitude);
     if (requestId !== selectedRequest) return;
     selectedLocation = { ...data, name: selectedLocation.name };
     renderLocation(data);
   } catch (error) {
     if (requestId !== selectedRequest) return;
     elements.total.textContent = "--";
-    elements.mycoLevel.textContent = "Sin datos";
-    elements.mycoDescription.textContent = "No se pudo calcular la estimación para esta ubicación.";
+    renderProbability("Today", null);
+    renderProbability("Future", null);
     elements.daily.textContent = "No hay datos diarios disponibles.";
     elements.message.textContent = error.message || "No se pudo consultar Open-Meteo. Inténtalo de nuevo.";
   } finally {
@@ -171,6 +217,11 @@ function setPeriod(days) {
   elements.period.textContent = `${days} DÍAS`;
   map.setPeriod(days);
   if (selectedLocation?.daily?.length) renderLocation(selectedLocation);
+}
+
+function setForecastHorizon(days) {
+  forecastHorizon = days;
+  if (selectedLocation?.daily?.length) renderForecast(selectedLocation.daily);
 }
 
 function closePopulationResults() {
@@ -264,6 +315,10 @@ elements.speciesSelect.addEventListener("change", (event) => {
   selectedProfile = SPECIES_PROFILES.find(({ id }) => id === event.currentTarget.value) ?? SPECIES_PROFILES[0];
   renderSpeciesProfile(selectedProfile);
   if (selectedLocation?.daily?.length) renderLocation(selectedLocation);
+});
+
+elements.forecastHorizon.addEventListener("change", (event) => {
+  setForecastHorizon(Number(event.currentTarget.value));
 });
 
 elements.daysButtons.forEach((button) => {

@@ -10,7 +10,8 @@ Rastreasetas es una aplicación web estática para explorar la precipitación re
 - Estaciones de referencia en Pirineos, Cordillera Cantábrica, Sistema Central, Sistema Ibérico, Sierra Morena y Sierras de Cazorla.
 - Selector de acumulación de 3, 7, 14, 21 y 28 días; 21 días queda seleccionado como referencia inicial.
 - Buscador de poblaciones españolas y consulta puntual por coordenadas, con desglose diario de lluvia y temperatura.
-- Perfiles editables para setas generales y robellones/níscalos, con rangos ambientales orientativos.
+- Estimación orientativa de fructificación para hoy y a 3, 7 o 14 días vista, según especie.
+- Perfiles editables para varias setas con lluvia desencadenante, incubación, temperatura, humedad, viento y hábitat aproximados.
 - Interfaz adaptable a móvil y escritorio, sin servidor ni proceso de compilación.
 
 ## Despliegue en GitHub Pages
@@ -30,9 +31,10 @@ Todos los recursos propios usan rutas relativas para funcionar tanto en la raíz
 - **OpenStreetMap:** cartografía topográfica/callejera.
 - **Esri World Imagery:** fondo de imágenes satelitales.
 - **Open-Meteo Historical Weather API:** `https://archive-api.open-meteo.com/v1/archive`, variables diarias `precipitation_sum` y `temperature_2m_mean`, zona horaria `Europe/Madrid`. No requiere clave.
+- **Open-Meteo Forecast API:** `https://api.open-meteo.com/v1/forecast`, 42 días previos y 16 días de previsión: precipitación, temperatura media/mínima, humedad relativa y viento máximo diario. No requiere clave.
 - **Open-Meteo Geocoding API:** `https://geocoding-api.open-meteo.com/v1/search`, para localizar poblaciones y centrar el mapa. No requiere clave.
 
-El API histórico puede publicar los datos recientes con varios días de demora. En ese caso la consulta puede no incluir los días más cercanos a hoy o devolver datos incompletos. La aplicación informa si no hay datos disponibles. Los perfiles de especie se mantienen en `js/utils/speciesProfiles.js`; sus rangos son aproximados y deben revisarse con conocimiento micológico local. El índice combina precipitación y temperatura media cuando están disponibles, pero no conoce el suelo, la altitud, los árboles presentes ni las observaciones de campo; no predice ni garantiza la presencia de setas.
+La estimación de fructificación busca episodios de lluvia dentro de la ventana de incubación definida para cada especie y combina volumen y continuidad de lluvia, tiempo de maduración y meteorología prevista (temperatura, heladas, humedad, viento y descenso de mínimas nocturnas). Los valores de `js/utils/speciesProfiles.js` son aproximaciones editables basadas en los rangos facilitados para el proyecto, no umbrales científicos validados. El porcentaje es una puntuación heurística, no una probabilidad estadística calibrada con salidas micológicas. No se conocen el suelo, la altitud exacta, la orientación, los árboles o plantas hospedadores ni la presión de recolección. Contrasta siempre con conocimiento local y normativa vigente; nunca consumas una seta por una predicción o una identificación automática.
 
 ## Estructura
 
@@ -61,6 +63,6 @@ El API histórico puede publicar los datos recientes con varios días de demora.
 
 ## Prompt y mantenimiento
 
-**Prompt de referencia:** «Crear Rastreasetas, una aplicación web cliente estática para GitHub Pages con Leaflet, que permita consultar la precipitación acumulada en zonas montañosas de España en varios periodos (incluido el recomendado de 21 días), buscar poblaciones y mostrar condiciones orientativas configurables para distintas setas mediante perfiles separados. Usar Open-Meteo, HTML, CSS y JavaScript ES6+, rutas relativas y el logotipo proporcionado. Documentar despliegue, APIs y tecnologías.»
+**Prompt de referencia:** «Crear Rastreasetas, una aplicación web cliente estática para GitHub Pages con Leaflet, que permita consultar la precipitación acumulada en zonas montañosas de España en varios periodos (incluido el recomendado de 21 días), buscar poblaciones y estimar de forma orientativa la fructificación hoy y en días futuros según lluvia desencadenante, incubación y variables meteorológicas, con perfiles configurables por especie. Usar Open-Meteo, HTML, CSS y JavaScript ES6+, rutas relativas y el logotipo proporcionado. Documentar despliegue, APIs y limitaciones del modelo.»
 
 **Pauta de actualización:** este README debe actualizarse siempre que se añadan funcionalidades, cambie el objetivo del proyecto, se modifiquen APIs o tecnologías relevantes, o cambie la URL de despliegue. Mantén también sincronizada la estructura descrita con los archivos reales.
