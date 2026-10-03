@@ -67,6 +67,7 @@ button { color: inherit; }
 .map-section { position: relative; overflow: hidden; }
 .sidebar { display: flex; flex-direction: column; padding: 25px 23px 17px; overflow: auto; }
 .eyebrow { color: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 1.4px; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
 @media (max-width: 850px) {
   .workspace { height: auto; min-height: 0; grid-template-columns: minmax(0, 1fr); padding: 12px; gap: 12px; }

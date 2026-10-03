@@ -8,8 +8,9 @@ Rastreasetas es una aplicación web estática para explorar la precipitación re
 
 - Mapa interactivo de España con fondos OpenStreetMap y Esri World Imagery.
 - Estaciones de referencia en Pirineos, Cordillera Cantábrica, Sistema Central, Sistema Ibérico, Sierra Morena y Sierras de Cazorla.
-- Selector de acumulación de 3, 7 o 14 días y control de opacidad de los datos.
-- Consulta puntual al seleccionar una ubicación, con lluvia diaria e índice orientativo de aptitud micológica.
+- Selector de acumulación de 3, 7, 14, 21 y 28 días; 21 días queda seleccionado como referencia inicial.
+- Buscador de poblaciones españolas y consulta puntual por coordenadas, con desglose diario de lluvia y temperatura.
+- Perfiles editables para setas generales y robellones/níscalos, con rangos ambientales orientativos.
 - Interfaz adaptable a móvil y escritorio, sin servidor ni proceso de compilación.
 
 ## Despliegue en GitHub Pages
@@ -28,9 +29,10 @@ Todos los recursos propios usan rutas relativas para funcionar tanto en la raíz
 - **Leaflet 1.9.4:** mapa, capas, eventos y marcadores circulares.
 - **OpenStreetMap:** cartografía topográfica/callejera.
 - **Esri World Imagery:** fondo de imágenes satelitales.
-- **Open-Meteo Historical Weather API:** `https://archive-api.open-meteo.com/v1/archive`, variable diaria `precipitation_sum`, zona horaria `Europe/Madrid`. No requiere clave.
+- **Open-Meteo Historical Weather API:** `https://archive-api.open-meteo.com/v1/archive`, variables diarias `precipitation_sum` y `temperature_2m_mean`, zona horaria `Europe/Madrid`. No requiere clave.
+- **Open-Meteo Geocoding API:** `https://geocoding-api.open-meteo.com/v1/search`, para localizar poblaciones y centrar el mapa. No requiere clave.
 
-El API histórico puede publicar los datos recientes con varios días de demora. En ese caso la consulta puede no incluir los días más cercanos a hoy o devolver datos incompletos. La aplicación informa si no hay datos disponibles. El índice micológico es una heurística basada únicamente en precipitación, no incorpora temperatura, suelo, altitud, hábitat ni observaciones de campo y no debe interpretarse como garantía de encontrar setas.
+El API histórico puede publicar los datos recientes con varios días de demora. En ese caso la consulta puede no incluir los días más cercanos a hoy o devolver datos incompletos. La aplicación informa si no hay datos disponibles. Los perfiles de especie se mantienen en `js/utils/speciesProfiles.js`; sus rangos son aproximados y deben revisarse con conocimiento micológico local. El índice combina precipitación y temperatura media cuando están disponibles, pero no conoce el suelo, la altitud, los árboles presentes ni las observaciones de campo; no predice ni garantiza la presencia de setas.
 
 ## Estructura
 
@@ -46,15 +48,19 @@ El API histórico puede publicar los datos recientes con varios días de demora.
 │       └── sidebar.css
 └── js/
     ├── app.js
-    ├── api/openMeteo.js
+    ├── api/
+    │   ├── geocoding.js
+    │   └── openMeteo.js
     ├── map/
     │   ├── mapManager.js
     │   └── heatLayer.js
-    └── utils/mycoIndex.js
+    └── utils/
+        ├── mycoIndex.js
+        └── speciesProfiles.js
 ```
 
 ## Prompt y mantenimiento
 
-**Prompt de referencia:** «Crear Rastreasetas, una aplicación web cliente estática para GitHub Pages con Leaflet, que permita consultar la precipitación acumulada de los últimos 3, 7 y 14 días en zonas montañosas de España mediante Open-Meteo Historical Weather API y muestre el desglose diario y un índice orientativo de aptitud micológica. Usar HTML, CSS y JavaScript ES6+, rutas relativas y el logotipo proporcionado. Documentar el despliegue en GitHub Pages y las tecnologías utilizadas.»
+**Prompt de referencia:** «Crear Rastreasetas, una aplicación web cliente estática para GitHub Pages con Leaflet, que permita consultar la precipitación acumulada en zonas montañosas de España en varios periodos (incluido el recomendado de 21 días), buscar poblaciones y mostrar condiciones orientativas configurables para distintas setas mediante perfiles separados. Usar Open-Meteo, HTML, CSS y JavaScript ES6+, rutas relativas y el logotipo proporcionado. Documentar despliegue, APIs y tecnologías.»
 
 **Pauta de actualización:** este README debe actualizarse siempre que se añadan funcionalidades, cambie el objetivo del proyecto, se modifiquen APIs o tecnologías relevantes, o cambie la URL de despliegue. Mantén también sincronizada la estructura descrita con los archivos reales.

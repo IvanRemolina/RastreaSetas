@@ -13,6 +13,16 @@
 .score-track { height: 4px; margin-top: 12px; overflow: hidden; background: #dce2d5; }
 .score-track span { display: block; width: 0; height: 100%; background: var(--gold-500); transition: width 240ms ease; }
 .aptitude-note { margin: 9px 0 0; color: #737a70; font-size: 10px; line-height: 1.5; }
+.species-panel { margin-top: 18px; padding: 15px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.species-select-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.species-select-row select { max-width: 58%; min-height: 34px; padding: 0 25px 0 8px; color: var(--forest-900); background: #fffefa; border: 1px solid #dfe3d8; font: 600 11px "DM Sans", sans-serif; }
+.species-panel h2 { margin: 13px 0 2px; color: var(--forest-900); font: 700 15px "Manrope", sans-serif; }
+.species-scientific { margin: 0; color: #888d83; font-size: 10px; font-style: italic; }
+.species-facts { display: grid; gap: 8px; margin: 13px 0 0; }
+.species-facts > div { display: grid; grid-template-columns: minmax(100px, 0.85fr) 1.5fr; gap: 10px; }
+.species-facts dt { color: #7c8278; font-size: 10px; }
+.species-facts dd { margin: 0; color: #444d43; font-size: 10px; line-height: 1.45; }
+.species-note { margin: 11px 0 0; color: #85897f; font-size: 9px; line-height: 1.5; }
 .daily-section { margin-top: 20px; }
 .section-heading { display: flex; align-items: baseline; justify-content: space-between; }
 .section-heading h2 { margin: 0; color: var(--forest-950); font: 700 14px "Manrope", sans-serif; }
@@ -33,7 +43,7 @@
 
 @media (max-width: 850px) {
   .sidebar { display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; }
-  .sidebar-heading, .location-line, .rain-total, .aptitude, .daily-section, .detail-message, .disclaimer, .sidebar-footer { grid-column: 1 / -1; }
+  .sidebar-heading, .location-line, .rain-total, .aptitude, .species-panel, .daily-section, .detail-message, .disclaimer, .sidebar-footer { grid-column: 1 / -1; }
   .daily-list { grid-template-columns: 1fr 1fr; }
   .disclaimer { margin-top: 6px; }
 }
