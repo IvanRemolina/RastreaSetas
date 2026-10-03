@@ -11,7 +11,7 @@
   pointer-events: none;
 }
 
-.period-control, .toolbar-caption {
+.toolbar-caption {
   display: flex;
   align-items: center;
   background: #fffefaee;
@@ -20,11 +20,7 @@
   backdrop-filter: blur(8px);
   pointer-events: auto;
 }
-.period-control { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; padding: 4px; }
-.period-button { min-height: 34px; padding: 0 7px; border: 0; background: transparent; color: #62695f; cursor: pointer; font-size: 12px; font-weight: 600; white-space: nowrap; }
-.period-button:hover { color: var(--forest-900); background: #f0f2eb; }
-.period-button.is-active { color: #fff; background: var(--forest-800); }
-.period-button:focus-visible, input:focus-visible, .population-search button:focus-visible, .population-option:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
+.population-search input:focus-visible, .population-search button:focus-visible, .population-option:focus-visible { outline: 2px solid var(--gold-500); outline-offset: 2px; }
 .toolbar-caption { align-self: flex-start; min-height: 32px; gap: 8px; padding: 0 10px; color: #485247; font-size: 10px; font-weight: 600; }
 .rain-key { width: 11px; height: 11px; border-radius: 50%; background: #d5a13b; border: 2px solid #fff; box-shadow: 0 0 0 1px #aa853c; }
 .population-search { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px; pointer-events: auto; }
@@ -57,8 +53,6 @@
 
 @media (max-width: 520px) {
   .map-toolbar { top: 9px; left: 9px; width: calc(100% - 75px); gap: 6px; }
-  .period-control { gap: 1px; padding: 3px; }
-  .period-button { min-height: 32px; padding: 0 3px; font-size: 10px; }
   .toolbar-caption { display: none; }
   .population-search input { height: 35px; padding: 0 8px; font-size: 11px; }
   .population-search > button { min-width: 56px; padding: 0 8px; font-size: 10px; }

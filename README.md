@@ -8,7 +8,7 @@ Rastreasetas es una aplicación web estática para explorar la precipitación re
 
 - Mapa interactivo de España con fondos OpenStreetMap y Esri World Imagery.
 - Estaciones de referencia en Pirineos, Cordillera Cantábrica, Sistema Central, Sistema Ibérico, Sierra Morena y Sierras de Cazorla.
-- Selector de acumulación de 3, 7, 14, 21 y 28 días; 21 días queda seleccionado como referencia inicial.
+- Contexto fijo con lluvia diaria y acumulada de los últimos 30 días; el mapa colorea según la ventana desencadenante del perfil de especie.
 - Buscador de poblaciones españolas y consulta puntual por coordenadas, con desglose diario de lluvia y temperatura.
 - Estimación orientativa de fructificación para hoy y a 3, 7 o 14 días vista, según especie.
 - Perfiles editables para varias setas con lluvia desencadenante, incubación, temperatura, humedad, viento y hábitat aproximados.
@@ -67,6 +67,6 @@ La estimación de fructificación busca episodios de lluvia dentro de la ventana
 
 ## Prompt y mantenimiento
 
-**Prompt de referencia:** «Crear Rastreasetas, una aplicación web cliente estática para GitHub Pages con Leaflet, que permita consultar la precipitación acumulada en zonas montañosas de España en varios periodos (incluido el recomendado de 21 días), buscar poblaciones y estimar de forma orientativa la fructificación hoy y en días futuros según lluvia desencadenante, incubación y variables meteorológicas, con perfiles configurables por especie. Usar Open-Meteo, HTML, CSS y JavaScript ES6+, rutas relativas y el logotipo proporcionado. Documentar despliegue, APIs y limitaciones del modelo.»
+**Prompt de referencia:** «Crear Rastreasetas, una aplicación web cliente estática para GitHub Pages con Leaflet, que muestre 30 días de precipitación como contexto, busque poblaciones y estime de forma orientativa la fructificación hoy y en días futuros según lluvia desencadenante, incubación y variables meteorológicas, con perfiles configurables por especie. Usar Open-Meteo, HTML, CSS y JavaScript ES6+, rutas relativas y el logotipo proporcionado. Documentar despliegue, APIs y limitaciones del modelo.»
 
 **Pauta de actualización:** este README debe actualizarse siempre que se añadan funcionalidades, cambie el objetivo del proyecto, se modifiquen APIs o tecnologías relevantes, o cambie la URL de despliegue. Mantén también sincronizada la estructura descrita con los archivos reales.

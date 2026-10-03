@@ -5,11 +5,9 @@ import { estimateFruitingProbability } from "./utils/mycoIndex.js";
 import { SPECIES_PROFILES } from "./utils/speciesProfiles.js";
 
 const elements = {
-  daysButtons: [...document.querySelectorAll(".period-button")],
   detailTitle: document.querySelector("#detail-title"),
   location: document.querySelector("#detail-location"),
   total: document.querySelector("#total-rain"),
-  period: document.querySelector("#period-label"),
   forecastHorizon: document.querySelector("#forecast-horizon"),
   forecastToday: document.querySelector("#forecast-today"),
   forecastTodayLevel: document.querySelector("#forecast-today-level"),
@@ -39,7 +37,7 @@ const elements = {
   speciesNote: document.querySelector("#species-note")
 };
 
-let selectedDays = 21;
+const DISPLAY_HISTORY_DAYS = 30;
 let selectedLocation = null;
 let selectedRequest = 0;
 let selectedProfile = SPECIES_PROFILES[0];
@@ -111,7 +109,7 @@ SPECIES_PROFILES.forEach((profile) => {
 renderSpeciesProfile(selectedProfile);
 
 function getRecentDays(daily) {
-  return daily.filter(({ date }) => date <= getSpainToday()).slice(-selectedDays);
+  return daily.filter(({ date }) => date <= getSpainToday()).slice(-DISPLAY_HISTORY_DAYS);
 }
 
 function describeEstimate(estimate) {
@@ -176,8 +174,8 @@ function renderLocation(data) {
   renderDaily(data.daily);
   renderForecast(data.daily);
 
-  if (validValues.length < selectedDays) {
-    elements.message.textContent = `Datos parciales: ${validValues.length} de ${selectedDays} días disponibles.`;
+  if (validValues.length < DISPLAY_HISTORY_DAYS) {
+    elements.message.textContent = `Datos parciales: ${validValues.length} de ${DISPLAY_HISTORY_DAYS} días disponibles.`;
   } else {
     elements.message.textContent = "";
   }
@@ -210,18 +208,6 @@ async function selectLocation(latitude, longitude, name = null) {
   } finally {
     if (requestId === selectedRequest) elements.message.classList.remove("is-loading");
   }
-}
-
-function setPeriod(days) {
-  selectedDays = days;
-  elements.daysButtons.forEach((button) => {
-    const active = Number(button.dataset.days) === days;
-    button.classList.toggle("is-active", active);
-    button.setAttribute("aria-pressed", String(active));
-  });
-  elements.period.textContent = `${days} DÍAS`;
-  map.setPeriod(days);
-  if (selectedLocation?.daily?.length) renderLocation(selectedLocation);
 }
 
 function setForecastHorizon(days) {
@@ -319,15 +305,12 @@ document.addEventListener("click", (event) => {
 elements.speciesSelect.addEventListener("change", (event) => {
   selectedProfile = SPECIES_PROFILES.find(({ id }) => id === event.currentTarget.value) ?? SPECIES_PROFILES[0];
   renderSpeciesProfile(selectedProfile);
+  map.setPeriod(selectedProfile.rainfall.windowDays);
   if (selectedLocation?.daily?.length) renderLocation(selectedLocation);
 });
 
 elements.forecastHorizon.addEventListener("change", (event) => {
   setForecastHorizon(Number(event.currentTarget.value));
-});
-
-elements.daysButtons.forEach((button) => {
-  button.addEventListener("click", () => setPeriod(Number(button.dataset.days)));
 });
 
 elements.opacity.addEventListener("input", (event) => {
@@ -340,7 +323,7 @@ async function loadStations() {
   const stations = map.getStations();
   updateStationStatus(`Cargando ${stations.length} estaciones...`);
   try {
-    const locations = await getRainfallForLocations(stations, 28);
+    const locations = await getRainfallForLocations(stations, DISPLAY_HISTORY_DAYS);
     map.setStationData(locations);
     updateStationStatus(`${locations.length} estaciones de referencia · zoom ${mapZoom}`);
   } catch (error) {
@@ -349,5 +332,5 @@ async function loadStations() {
   }
 }
 
-setPeriod(selectedDays);
+map.setPeriod(selectedProfile.rainfall.windowDays);
 loadStations();

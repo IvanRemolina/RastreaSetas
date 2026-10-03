@@ -27,13 +27,6 @@
     <main class="workspace">
       <section class="map-section" aria-label="Mapa de precipitación de España">
         <div class="map-toolbar">
-          <div class="period-control" role="group" aria-label="Periodo de lluvia">
-            <button class="period-button" type="button" data-days="3" aria-pressed="false">3 días</button>
-            <button class="period-button" type="button" data-days="7" aria-pressed="false">7 días</button>
-            <button class="period-button" type="button" data-days="14" aria-pressed="false">14 días</button>
-            <button class="period-button is-active" type="button" data-days="21" aria-pressed="true">21 días</button>
-            <button class="period-button" type="button" data-days="28" aria-pressed="false">28 días</button>
-          </div>
           <form id="population-search" class="population-search" role="search" autocomplete="off">
             <label class="visually-hidden" for="population-input">Buscar población en España</label>
             <input id="population-input" type="search" placeholder="Buscar población..." role="combobox" aria-autocomplete="list" aria-controls="population-results" aria-expanded="false">
@@ -41,7 +34,7 @@
             <ul id="population-results" class="population-results" role="listbox" aria-label="Poblaciones" hidden></ul>
             <span id="population-status" class="population-status" role="status" aria-live="polite"></span>
           </form>
-          <div class="toolbar-caption"><span class="rain-key"></span> Precipitación acumulada</div>
+          <div class="toolbar-caption"><span class="rain-key"></span> Lluvia · ventana de especie</div>
         </div>
         <div id="map" role="application" aria-label="Mapa interactivo. Selecciona un punto para consultar la lluvia"></div>
         <div id="habitat-status" class="habitat-status" role="status" aria-live="polite" hidden></div>
@@ -57,8 +50,8 @@
         </div>
         <p id="detail-location" class="location-line">Pulsa sobre una zona para consultar su lluvia.</p>
         <div class="rain-total">
-          <div><span class="eyebrow">LLUVIA ACUMULADA</span><p class="total-value"><span id="total-rain">--</span><span class="unit">mm</span></p></div>
-          <span class="period-badge" id="period-label">21 DÍAS</span>
+          <div><span class="eyebrow">LLUVIA ACUMULADA · CONTEXTO</span><p class="total-value"><span id="total-rain">--</span><span class="unit">mm</span></p></div>
+          <span class="period-badge">30 DÍAS</span>
         </div>
         <section class="forecast-panel" aria-labelledby="forecast-title" aria-live="polite">
           <div class="forecast-heading">
@@ -108,7 +101,7 @@
           <p>La capa de coníferas es colaborativa y orientativa; no indica propiedad, acceso ni permiso. Consulta la normativa de la comunidad autónoma y del municipio antes de recolectar.</p>
         </section>
         <section class="daily-section" aria-labelledby="daily-title">
-          <div class="section-heading"><h2 id="daily-title">Desglose diario</h2><span>mm / día</span></div>
+          <div class="section-heading"><h2 id="daily-title">Últimos 30 días</h2><span>mm / día</span></div>
           <div id="daily-list" class="daily-list"><p class="empty-daily">Los datos diarios aparecerán aquí.</p></div>
         </section>
         <div id="detail-message" class="detail-message" role="status" aria-live="polite"></div>

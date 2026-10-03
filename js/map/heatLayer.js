@@ -36,7 +36,7 @@ function markerStyle(amount, opacity) {
 export function createRainLayer() {
   const layer = L.layerGroup();
   let locations = [];
-  let days = 7;
+  let days = 14;
   let opacity = 0.78;
 
   function redraw() {
@@ -47,7 +47,7 @@ export function createRainLayer() {
         .filter(Number.isFinite);
       const total = values.reduce((sum, value) => sum + value, 0);
       const marker = L.circleMarker([location.latitude, location.longitude], markerStyle(total, opacity));
-      marker.bindTooltip(`${STATIONS[index].name} · ${total.toFixed(1)} mm`, { direction: "top", offset: [0, -5] });
+      marker.bindTooltip(`${STATIONS[index].name} · ${total.toFixed(1)} mm / ${days} días`, { direction: "top", offset: [0, -5] });
       marker.addTo(layer);
     });
   }

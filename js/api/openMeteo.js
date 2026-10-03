@@ -1,7 +1,7 @@
 const API_URL = "https://archive-api.open-meteo.com/v1/archive";
 const FORECAST_API_URL = "https://api.open-meteo.com/v1/forecast";
 const DAY_MS = 24 * 60 * 60 * 1000;
-const SUPPORTED_PERIODS = [3, 7, 14, 21, 28];
+const SUPPORTED_PERIODS = [3, 7, 14, 21, 28, 30];
 
 function formatDate(date) {
   return date.toISOString().slice(0, 10);
@@ -41,7 +41,7 @@ function normalizeResponse(payload, coordinates) {
 
 export async function getRainfallForLocations(coordinates, days = 14) {
   if (!Array.isArray(coordinates) || coordinates.length === 0) return [];
-  if (!SUPPORTED_PERIODS.includes(days)) throw new RangeError("El periodo debe ser de 3, 7, 14, 21 o 28 días.");
+  if (!SUPPORTED_PERIODS.includes(days)) throw new RangeError("El periodo debe ser de 3, 7, 14, 21, 28 o 30 días.");
 
   const { startDate, endDate } = getDateRange(days);
   const query = new URLSearchParams({
