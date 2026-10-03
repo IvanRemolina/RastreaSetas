@@ -15,9 +15,13 @@ export function initializeMap({ onMapClick, onZoom, onHabitatStatus }) {
   topographic.addTo(map);
   L.control.zoom({ position: "topright" }).addTo(map);
   const habitat = createHabitatLayer(map, onHabitatStatus);
+  const modelGridPoint = L.layerGroup();
   L.control.layers(
     { "Topográfica · OpenStreetMap": topographic, "Satélite · Esri": satellite },
-    { "Coníferas · OSM (orientativo)": habitat },
+    {
+      "Coníferas · OSM (orientativo)": habitat,
+      "Punto de rejilla Open-Meteo": modelGridPoint
+    },
     { position: "topright" }
   ).addTo(map);
 
@@ -35,6 +39,24 @@ export function initializeMap({ onMapClick, onZoom, onHabitatStatus }) {
     selectedPoint.setLatLng([latitude, longitude]).addTo(map);
   }
 
+  function setModelGridPoint(selectedLatitude, selectedLongitude, gridLatitude, gridLongitude) {
+    modelGridPoint.clearLayers();
+    L.polyline([[selectedLatitude, selectedLongitude], [gridLatitude, gridLongitude]], {
+      color: "#2475a5",
+      weight: 2,
+      dashArray: "4 6",
+      interactive: false
+    }).addTo(modelGridPoint);
+    L.circleMarker([gridLatitude, gridLongitude], {
+      radius: 7,
+      color: "#fff",
+      weight: 2,
+      fillColor: "#2475a5",
+      fillOpacity: 1
+    }).bindTooltip("Punto de rejilla del modelo Open-Meteo; no es un pluviómetro.")
+      .addTo(modelGridPoint);
+  }
+
   map.on("click", (event) => {
     selectPoint(event.latlng.lat, event.latlng.lng);
     onMapClick(event.latlng.lat, event.latlng.lng);
@@ -43,8 +65,9 @@ export function initializeMap({ onMapClick, onZoom, onHabitatStatus }) {
 
   return {
     rain,
-    getStations: () => rain.getStations(),
-    setStationData: (locations) => rain.setLocations(locations),
+    getReferencePoints: () => rain.getReferencePoints(),
+    setReferenceData: (locations) => rain.setLocations(locations),
+    setModelGridPoint,
     setPeriod: (days) => rain.setPeriod(days),
     setOpacity: (opacity) => rain.setOpacity(opacity),
     focusLocation(latitude, longitude) {

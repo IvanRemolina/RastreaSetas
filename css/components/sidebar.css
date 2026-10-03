@@ -2,6 +2,8 @@
 .sidebar-heading h1 { margin: 6px 0 0; color: var(--forest-950); font: 700 22px/1.2 "Manrope", sans-serif; }
 .coordinate-icon { width: 37px; height: 37px; display: grid; place-items: center; color: var(--forest-800); background: var(--moss-100); font-size: 23px; }
 .location-line { min-height: 19px; margin: 7px 0 19px; color: var(--muted); font-size: 12px; }
+.grid-distance { margin: -13px 0 15px; color: #547184; font-size: 10px; line-height: 1.5; }
+.grid-distance[hidden] { display: none; }
 .rain-total { display: flex; align-items: center; justify-content: space-between; padding: 17px 0 18px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .total-value { margin: 4px 0 0; color: var(--forest-900); font: 700 38px/1 "Manrope", sans-serif; }
 .unit { margin-left: 6px; color: #7d8578; font: 600 14px "DM Sans", sans-serif; }

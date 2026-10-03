@@ -7,7 +7,8 @@ Rastreasetas es una aplicación web estática para explorar la precipitación re
 ## Funcionalidades
 
 - Mapa interactivo de España con fondos OpenStreetMap y Esri World Imagery.
-- Estaciones de referencia en Pirineos, Cordillera Cantábrica, Sistema Central, Sistema Ibérico, Sierra Morena y Sierras de Cazorla.
+- Puntos de referencia modelados en Pirineos, Cordillera Cantábrica, Sistema Central, Sistema Ibérico, Sierra Morena y Sierras de Cazorla (no son pluviómetros).
+- Overlay activable para marcar el punto de rejilla devuelto por Open-Meteo y su distancia al punto elegido.
 - Contexto fijo con lluvia diaria y acumulada de los últimos 30 días; el mapa colorea según la ventana desencadenante del perfil de especie.
 - Buscador de poblaciones españolas y consulta puntual por coordenadas, con desglose diario de lluvia y temperatura.
 - Estimación orientativa de fructificación para hoy y a 3, 7 o 14 días vista, según especie.
@@ -37,6 +38,8 @@ Todos los recursos propios usan rutas relativas para funcionar tanto en la raíz
 
 La capa forestal depende de etiquetas de OpenStreetMap y de servidores públicos Overpass, sujetos a cobertura desigual, límites de uso y disponibilidad. No muestra permisos. No existe en la aplicación una cartografía estatal verificada de acotados o zonas legales; los requisitos dependen de la comunidad autónoma, municipio y titular del terreno. Un monte público tampoco implica permiso automático. Comprueba la normativa y autorización local antes de recolectar.
 
+El overlay **Punto de rejilla Open-Meteo** se activa o desactiva desde el control de capas. La distancia se calcula desde las coordenadas pulsadas hasta las coordenadas de rejilla devueltas por el modelo; no representa la distancia a una estación meteorológica física ni a un pluviómetro.
+
 La estimación de fructificación busca episodios de lluvia dentro de la ventana de incubación definida para cada especie y combina volumen y continuidad de lluvia, tiempo de maduración y meteorología prevista (temperatura, heladas, humedad, viento y descenso de mínimas nocturnas). Los valores de `js/utils/speciesProfiles.js` son aproximaciones editables basadas en los rangos facilitados para el proyecto, no umbrales científicos validados. El porcentaje es una puntuación heurística, no una probabilidad estadística calibrada con salidas micológicas. No se conocen el suelo, la altitud exacta, la orientación, los árboles o plantas hospedadores ni la presión de recolección. Contrasta siempre con conocimiento local y normativa vigente; nunca consumas una seta por una predicción o una identificación automática.
 
 ## Estructura
@@ -61,6 +64,7 @@ La estimación de fructificación busca episodios de lluvia dentro de la ventana
     │   ├── heatLayer.js
     │   └── habitatLayer.js
     └── utils/
+        ├── geo.js
         ├── mycoIndex.js
         └── speciesProfiles.js
 ```

@@ -1,4 +1,4 @@
-const STATIONS = [
+const REFERENCE_POINTS = [
   { name: "Pirineos", latitude: 42.65, longitude: 0.58 },
   { name: "Pirineos", latitude: 42.53, longitude: 1.45 },
   { name: "Pirineos", latitude: 42.39, longitude: -0.13 },
@@ -47,7 +47,7 @@ export function createRainLayer() {
         .filter(Number.isFinite);
       const total = values.reduce((sum, value) => sum + value, 0);
       const marker = L.circleMarker([location.latitude, location.longitude], markerStyle(total, opacity));
-      marker.bindTooltip(`${STATIONS[index].name} · ${total.toFixed(1)} mm / ${days} días`, { direction: "top", offset: [0, -5] });
+      marker.bindTooltip(`${REFERENCE_POINTS[index].name} · ${total.toFixed(1)} mm / ${days} días`, { direction: "top", offset: [0, -5] });
       marker.addTo(layer);
     });
   }
@@ -66,8 +66,8 @@ export function createRainLayer() {
       opacity = nextOpacity;
       redraw();
     },
-    getStations() {
-      return STATIONS;
+    getReferencePoints() {
+      return REFERENCE_POINTS;
     }
   };
 }

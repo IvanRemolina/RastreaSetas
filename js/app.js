@@ -2,11 +2,13 @@ import { getRainfall, getRainfallForLocations } from "./api/openMeteo.js";
 import { searchPopulations } from "./api/geocoding.js";
 import { initializeMap } from "./map/mapManager.js";
 import { estimateFruitingProbability } from "./utils/mycoIndex.js";
+import { calculateDistanceKm } from "./utils/geo.js";
 import { SPECIES_PROFILES } from "./utils/speciesProfiles.js";
 
 const elements = {
   detailTitle: document.querySelector("#detail-title"),
   location: document.querySelector("#detail-location"),
+  gridDistance: document.querySelector("#grid-distance"),
   total: document.querySelector("#total-rain"),
   forecastHorizon: document.querySelector("#forecast-horizon"),
   forecastToday: document.querySelector("#forecast-today"),
@@ -58,7 +60,7 @@ const map = initializeMap({
 });
 
 function updateStationStatus(message) {
-  elements.stationStatus.textContent = message ?? `18 estaciones de referencia · zoom ${mapZoom}`;
+  elements.stationStatus.textContent = message ?? `18 puntos de referencia · zoom ${mapZoom}`;
 }
 
 function formatCoordinate(latitude, longitude) {
@@ -186,6 +188,8 @@ async function selectLocation(latitude, longitude, name = null) {
   const requestId = ++selectedRequest;
   elements.detailTitle.textContent = selectedLocation.name ?? "Ubicación consultada";
   elements.location.textContent = formatCoordinate(latitude, longitude);
+  elements.gridDistance.hidden = false;
+  elements.gridDistance.textContent = "Calculando distancia al punto de rejilla...";
   elements.total.textContent = "…";
   renderProbability("Today", null);
   renderProbability("Future", null);
@@ -197,10 +201,14 @@ async function selectLocation(latitude, longitude, name = null) {
     const data = await getRainfall(latitude, longitude);
     if (requestId !== selectedRequest) return;
     selectedLocation = { ...data, name: selectedLocation.name };
+    const gridDistance = calculateDistanceKm(latitude, longitude, data.latitude, data.longitude);
+    map.setModelGridPoint(latitude, longitude, data.latitude, data.longitude);
+    elements.gridDistance.textContent = `${gridDistance < 10 ? gridDistance.toFixed(1) : Math.round(gridDistance)} km hasta el punto de rejilla meteorológica de Open-Meteo (no es un pluviómetro).`;
     renderLocation(data);
   } catch (error) {
     if (requestId !== selectedRequest) return;
     elements.total.textContent = "--";
+    elements.gridDistance.textContent = "Distancia al punto de rejilla no disponible.";
     renderProbability("Today", null);
     renderProbability("Future", null);
     elements.daily.textContent = "No hay datos diarios disponibles.";
@@ -319,18 +327,18 @@ elements.opacity.addEventListener("input", (event) => {
   elements.opacityValue.value = `${opacity}%`;
 });
 
-async function loadStations() {
-  const stations = map.getStations();
-  updateStationStatus(`Cargando ${stations.length} estaciones...`);
+async function loadReferencePoints() {
+  const referencePoints = map.getReferencePoints();
+  updateStationStatus(`Cargando ${referencePoints.length} puntos de referencia...`);
   try {
-    const locations = await getRainfallForLocations(stations, DISPLAY_HISTORY_DAYS);
-    map.setStationData(locations);
-    updateStationStatus(`${locations.length} estaciones de referencia · zoom ${mapZoom}`);
+    const locations = await getRainfallForLocations(referencePoints, DISPLAY_HISTORY_DAYS);
+    map.setReferenceData(locations);
+    updateStationStatus(`${locations.length} puntos de referencia · zoom ${mapZoom}`);
   } catch (error) {
-    updateStationStatus("Estaciones sin datos · consulta un punto");
-    console.error("No se pudieron cargar las estaciones de lluvia:", error);
+    updateStationStatus("Puntos de referencia sin datos · consulta un punto");
+    console.error("No se pudieron cargar los puntos de referencia:", error);
   }
 }
 
 map.setPeriod(selectedProfile.rainfall.windowDays);
-loadStations();
+loadReferencePoints();
