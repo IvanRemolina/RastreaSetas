@@ -1,14 +1,14 @@
-import { getRainfall, getRainfallForLocations } from "./api/openMeteo.js";
+import { getNearbyRainfall, getRainfallForLocations } from "./api/openMeteo.js";
 import { searchPopulations } from "./api/geocoding.js";
 import { initializeMap } from "./map/mapManager.js";
 import { estimateFruitingProbability } from "./utils/mycoIndex.js";
-import { calculateDistanceKm } from "./utils/geo.js";
 import { SPECIES_PROFILES } from "./utils/speciesProfiles.js";
 
 const elements = {
   detailTitle: document.querySelector("#detail-title"),
   location: document.querySelector("#detail-location"),
-  gridDistance: document.querySelector("#grid-distance"),
+  gridReference: document.querySelector("#grid-reference"),
+  gridPoints: document.querySelector("#grid-points"),
   total: document.querySelector("#total-rain"),
   forecastHorizon: document.querySelector("#forecast-horizon"),
   forecastToday: document.querySelector("#forecast-today"),
@@ -165,6 +165,26 @@ function renderDaily(daily) {
   });
 }
 
+function renderGridPoints(gridPoints) {
+  elements.gridPoints.replaceChildren();
+  gridPoints.forEach((point, index) => {
+    const row = document.createElement("li");
+    row.className = index === 0 ? "grid-point is-nearest" : "grid-point";
+    const title = document.createElement("strong");
+    title.textContent = index === 0 ? "Más cercano consultado" : `Punto vecino ${index}`;
+    const recent = getRecentDays(point.daily);
+    const total = recent
+      .map(({ precipitation }) => precipitation)
+      .filter(Number.isFinite)
+      .reduce((sum, amount) => sum + amount, 0);
+    const detail = document.createElement("span");
+    detail.textContent = `${point.distanceKm.toFixed(1)} km · ${total.toFixed(1)} mm / 30 días`;
+    row.append(title, detail);
+    elements.gridPoints.append(row);
+  });
+  elements.gridReference.hidden = gridPoints.length === 0;
+}
+
 function renderLocation(data) {
   const recent = getRecentDays(data.daily);
   const validValues = recent
@@ -188,6 +208,9 @@ async function selectLocation(latitude, longitude, name = null) {
   const requestId = ++selectedRequest;
   elements.detailTitle.textContent = selectedLocation.name ?? "Ubicación consultada";
   elements.location.textContent = formatCoordinate(latitude, longitude);
+  elements.gridReference.hidden = true;
+  elements.gridPoints.replaceChildren();
+  map.setModelGridPoints(latitude, longitude, []);
   elements.gridDistance.hidden = false;
   elements.gridDistance.textContent = "Calculando distancia al punto de rejilla...";
   elements.total.textContent = "…";
@@ -198,17 +221,19 @@ async function selectLocation(latitude, longitude, name = null) {
   elements.message.classList.add("is-loading");
 
   try {
-    const data = await getRainfall(latitude, longitude);
+    const gridPoints = await getNearbyRainfall(latitude, longitude);
     if (requestId !== selectedRequest) return;
+    const data = gridPoints[0];
+    if (!data) throw new Error("Open-Meteo no devolvió puntos de rejilla para esta ubicación.");
     selectedLocation = { ...data, name: selectedLocation.name };
-    const gridDistance = calculateDistanceKm(latitude, longitude, data.latitude, data.longitude);
-    map.setModelGridPoint(latitude, longitude, data.latitude, data.longitude);
-    elements.gridDistance.textContent = `${gridDistance < 10 ? gridDistance.toFixed(1) : Math.round(gridDistance)} km hasta el punto de rejilla meteorológica de Open-Meteo (no es un pluviómetro).`;
+    map.setModelGridPoints(latitude, longitude, gridPoints);
+    renderGridPoints(gridPoints);
     renderLocation(data);
   } catch (error) {
     if (requestId !== selectedRequest) return;
     elements.total.textContent = "--";
-    elements.gridDistance.textContent = "Distancia al punto de rejilla no disponible.";
+    elements.gridReference.hidden = true;
+    elements.gridPoints.replaceChildren();
     renderProbability("Today", null);
     renderProbability("Future", null);
     elements.daily.textContent = "No hay datos diarios disponibles.";

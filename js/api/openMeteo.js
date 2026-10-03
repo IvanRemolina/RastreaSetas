@@ -1,7 +1,11 @@
+import { calculateDistanceKm } from "../utils/geo.js";
+
 const API_URL = "https://archive-api.open-meteo.com/v1/archive";
 const FORECAST_API_URL = "https://api.open-meteo.com/v1/forecast";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const SUPPORTED_PERIODS = [3, 7, 14, 21, 28, 30];
+const NEIGHBOR_RADIUS_KM = 10;
+const EARTH_LATITUDE_KM_PER_DEGREE = 111.195;
 
 function formatDate(date) {
   return date.toISOString().slice(0, 10);
@@ -59,9 +63,23 @@ export async function getRainfallForLocations(coordinates, days = 14) {
 }
 
 export async function getRainfall(latitude, longitude) {
+  const [nearest] = await getNearbyRainfall(latitude, longitude);
+  return nearest;
+}
+
+export async function getNearbyRainfall(latitude, longitude) {
+  const latitudeOffset = NEIGHBOR_RADIUS_KM / EARTH_LATITUDE_KM_PER_DEGREE;
+  const longitudeOffset = latitudeOffset / Math.cos(latitude * Math.PI / 180);
+  const coordinates = [
+    { latitude, longitude },
+    { latitude: latitude + latitudeOffset, longitude },
+    { latitude: latitude - latitudeOffset, longitude },
+    { latitude, longitude: longitude + longitudeOffset },
+    { latitude, longitude: longitude - longitudeOffset }
+  ];
   const params = new URLSearchParams({
-    latitude: String(latitude),
-    longitude: String(longitude),
+    latitude: coordinates.map((point) => point.latitude).join(","),
+    longitude: coordinates.map((point) => point.longitude).join(","),
     past_days: "42",
     forecast_days: "16",
     daily: "precipitation_sum,temperature_2m_mean,temperature_2m_min,relative_humidity_2m_mean,wind_speed_10m_max",
@@ -69,6 +87,18 @@ export async function getRainfall(latitude, longitude) {
   });
   const response = await fetch(`${FORECAST_API_URL}?${params}`);
   if (!response.ok) throw new Error(`Open-Meteo respondió con el estado ${response.status}.`);
-  const [result] = normalizeResponse(await response.json(), [{ latitude, longitude }]);
-  return result;
+  const results = normalizeResponse(await response.json(), coordinates);
+  const uniqueGridPoints = new Map();
+  results.forEach((result) => {
+    const key = `${result.latitude.toFixed(5)},${result.longitude.toFixed(5)}`;
+    if (!uniqueGridPoints.has(key)) uniqueGridPoints.set(key, result);
+  });
+
+  return [...uniqueGridPoints.values()]
+    .map((point) => ({
+      ...point,
+      distanceKm: Math.round(calculateDistanceKm(latitude, longitude, point.latitude, point.longitude) * 10) / 10
+    }))
+    .sort((first, second) => first.distanceKm - second.distanceKm)
+    .slice(0, 5);
 }

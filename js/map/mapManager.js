@@ -20,7 +20,7 @@ export function initializeMap({ onMapClick, onZoom, onHabitatStatus }) {
     { "Topográfica · OpenStreetMap": topographic, "Satélite · Esri": satellite },
     {
       "Coníferas · OSM (orientativo)": habitat,
-      "Punto de rejilla Open-Meteo": modelGridPoint
+      "Puntos de rejilla Open-Meteo": modelGridPoint
     },
     { position: "topright" }
   ).addTo(map);
@@ -39,22 +39,25 @@ export function initializeMap({ onMapClick, onZoom, onHabitatStatus }) {
     selectedPoint.setLatLng([latitude, longitude]).addTo(map);
   }
 
-  function setModelGridPoint(selectedLatitude, selectedLongitude, gridLatitude, gridLongitude) {
+  function setModelGridPoints(selectedLatitude, selectedLongitude, gridPoints) {
     modelGridPoint.clearLayers();
-    L.polyline([[selectedLatitude, selectedLongitude], [gridLatitude, gridLongitude]], {
-      color: "#2475a5",
-      weight: 2,
-      dashArray: "4 6",
-      interactive: false
-    }).addTo(modelGridPoint);
-    L.circleMarker([gridLatitude, gridLongitude], {
-      radius: 7,
-      color: "#fff",
-      weight: 2,
-      fillColor: "#2475a5",
-      fillOpacity: 1
-    }).bindTooltip("Punto de rejilla del modelo Open-Meteo; no es un pluviómetro.")
-      .addTo(modelGridPoint);
+    gridPoints.forEach((point, index) => {
+      const isNearest = index === 0;
+      L.polyline([[selectedLatitude, selectedLongitude], [point.latitude, point.longitude]], {
+        color: isNearest ? "#2475a5" : "#6c99b3",
+        weight: isNearest ? 2.5 : 1.5,
+        dashArray: "4 6",
+        interactive: false
+      }).addTo(modelGridPoint);
+      L.circleMarker([point.latitude, point.longitude], {
+        radius: isNearest ? 8 : 6,
+        color: "#fff",
+        weight: 2,
+        fillColor: isNearest ? "#176b9c" : "#75a1b7",
+        fillOpacity: 1
+      }).bindTooltip(`${isNearest ? "Rejilla más cercana consultada" : `Rejilla vecina ${index}`} · ${point.distanceKm} km · no es un pluviómetro`)
+        .addTo(modelGridPoint);
+    });
   }
 
   map.on("click", (event) => {
@@ -67,7 +70,7 @@ export function initializeMap({ onMapClick, onZoom, onHabitatStatus }) {
     rain,
     getReferencePoints: () => rain.getReferencePoints(),
     setReferenceData: (locations) => rain.setLocations(locations),
-    setModelGridPoint,
+    setModelGridPoints,
     setPeriod: (days) => rain.setPeriod(days),
     setOpacity: (opacity) => rain.setOpacity(opacity),
     focusLocation(latitude, longitude) {

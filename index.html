@@ -39,7 +39,7 @@
         <div id="map" role="application" aria-label="Mapa interactivo. Selecciona un punto para consultar la lluvia"></div>
         <div id="habitat-status" class="habitat-status" role="status" aria-live="polite" hidden></div>
         <div class="map-footer">
-          <span><span class="data-dot"></span><span id="station-status">Preparando estaciones...</span></span>
+          <span><span class="data-dot"></span><span id="station-status">Preparando puntos de referencia...</span></span>
           <label class="opacity-control" for="opacity-slider"><span>Opacidad</span><input id="opacity-slider" type="range" min="20" max="100" value="78" aria-label="Opacidad de la capa de lluvia"><output id="opacity-value">78%</output></label>
         </div>
       </section>
@@ -49,7 +49,10 @@
           <span class="coordinate-icon" aria-hidden="true">⌖</span>
         </div>
         <p id="detail-location" class="location-line">Pulsa sobre una zona para consultar su lluvia.</p>
-        <p id="grid-distance" class="grid-distance" aria-live="polite" hidden></p>
+        <section id="grid-reference" class="grid-reference" aria-label="Puntos de rejilla meteorológica cercanos" aria-live="polite" hidden>
+          <div class="grid-reference-heading"><h2>Puntos de rejilla cercanos</h2><span>No son pluviómetros</span></div>
+          <ol id="grid-points" class="grid-points"></ol>
+        </section>
         <div class="rain-total">
           <div><span class="eyebrow">LLUVIA ACUMULADA · CONTEXTO</span><p class="total-value"><span id="total-rain">--</span><span class="unit">mm</span></p></div>
           <span class="period-badge">30 DÍAS</span>
