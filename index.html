@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#17241d">
+    <meta name="description" content="Explora la lluvia reciente en zonas montañosas de España con Rastreasetas.">
+    <title>Rastreasetas | Lluvia y micología</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/components/map.css">
+    <link rel="stylesheet" href="./css/components/sidebar.css">
+    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script type="module" src="./js/app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Rastreasetas, inicio">
+        <img src="./assets/logo.png" alt="" width="52" height="52">
+        <span class="brand-copy"><strong>Rastreasetas</strong><small>LLUVIA · MONTAÑA · BOSQUE</small></span>
+      </a>
+      <div class="header-context"><span class="live-mark" aria-hidden="true"></span> EXPLORADOR DE PRECIPITACIÓN</div>
+    </header>
+    <main class="workspace">
+      <section class="map-section" aria-label="Mapa de precipitación de España">
+        <div class="map-toolbar">
+          <div class="period-control" role="group" aria-label="Periodo de lluvia">
+            <button class="period-button" type="button" data-days="3" aria-pressed="false">3 días</button>
+            <button class="period-button is-active" type="button" data-days="7" aria-pressed="true">7 días</button>
+            <button class="period-button" type="button" data-days="14" aria-pressed="false">14 días</button>
+          </div>
+          <div class="toolbar-caption"><span class="rain-key"></span> Precipitación acumulada</div>
+        </div>
+        <div id="map" role="application" aria-label="Mapa interactivo. Selecciona un punto para consultar la lluvia"></div>
+        <div class="map-footer">
+          <span><span class="data-dot"></span><span id="station-status">Preparando estaciones...</span></span>
+          <label class="opacity-control" for="opacity-slider"><span>Opacidad</span><input id="opacity-slider" type="range" min="20" max="100" value="78" aria-label="Opacidad de la capa de lluvia"><output id="opacity-value">78%</output></label>
+        </div>
+      </section>
+      <aside class="sidebar" aria-labelledby="detail-title">
+        <div class="sidebar-heading">
+          <div><span class="eyebrow">PUNTO SELECCIONADO</span><h1 id="detail-title">Explora el mapa</h1></div>
+          <span class="coordinate-icon" aria-hidden="true">⌖</span>
+        </div>
+        <p id="detail-location" class="location-line">Pulsa sobre una zona para consultar su lluvia.</p>
+        <div class="rain-total">
+          <div><span class="eyebrow">LLUVIA ACUMULADA</span><p class="total-value"><span id="total-rain">--</span><span class="unit">mm</span></p></div>
+          <span class="period-badge" id="period-label">7 DÍAS</span>
+        </div>
+        <section class="aptitude" aria-live="polite">
+          <div class="aptitude-top"><div><span class="eyebrow">APTITUD MICOLÓGICA</span><h2 id="myco-level">Sin datos</h2></div><span id="myco-score" class="score">--</span></div>
+          <div class="score-track" aria-hidden="true"><span id="score-fill"></span></div>
+          <p id="myco-description" class="aptitude-note">Elige un punto del mapa para ver una estimación.</p>
+        </section>
+        <section class="daily-section" aria-labelledby="daily-title">
+          <div class="section-heading"><h2 id="daily-title">Desglose diario</h2><span>mm / día</span></div>
+          <div id="daily-list" class="daily-list"><p class="empty-daily">Los datos diarios aparecerán aquí.</p></div>
+        </section>
+        <div id="detail-message" class="detail-message" role="status" aria-live="polite"></div>
+        <p class="disclaimer"><span aria-hidden="true">ⓘ</span> Estimación orientativa basada solo en lluvia. La presencia de setas depende también del hábitat, suelo, temperatura y otros factores.</p>
+        <footer class="sidebar-footer">DATOS METEOROLÓGICOS · OPEN-METEO</footer>
+      </aside>
+    </main>
+  </body>
+</html>
